@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Desireé Modas - Cadastrar Produtos</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 700px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #f7f7f7;
+    }
+    h1 {
+      color: #e83f8e;
+    }
+    form {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(232,63,142,0.3);
+      margin-bottom: 30px;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+      color: #333;
+    }
+    input[type="text"],
+    input[type="number"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+      font-size: 14px;
+    }
+    textarea {
+      resize: vertical;
+      min-height: 60px;
+    }
+    button {
+      background-color: #e83f8e;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      margin-top: 15px;
+      cursor: pointer;
+      border-radius: 6px;
+      font-size: 16px;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #b9306f;
+    }
+    .products-list {
+      background: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(232,63,142,0.2);
+    }
+    .product-item {
+      border-bottom: 1px solid #ddd;
+      padding: 10px 0;
+      display: flex;
+      align-items: center;
+    }
+    .product-item:last-child {
+      border-bottom: none;
+    }
+    .product-item img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 5px;
+      margin-right: 15px;
+    }
+    .product-info {
+      flex-grow: 1;
+    }
+    .product-info strong {
+      color: #e83f8e;
+    }
+  </style>
+</head>
+<body>
+  <h1>Admin Desireé Modas - Cadastrar Produto</h1>
+  <form id="product-form">
+    <label for="name">Nome do Produto:</label>
+    <input type="text" id="name" name="name" required />
+
+    <label for="price">Preço (R$):</label>
+    <input type="number" step="0.01" id="price" name="price" required min="0" />
+
+    <label for="category">Categoria:</label>
+    <select id="category" name="category" required>
+      <option value="">Selecione uma categoria</option>
+      <option value="Roupas">Roupas</option>
+      <option value="Acessórios">Acessórios</option>
+      <option value="Calçados">Calçados</option>
+      <option value="Promoções">Promoções</option>
+    </select>
+
+    <label for="description">Descrição:</label>
+    <textarea id="description" name="description"></textarea>
+
+    <label for="image">URL da Imagem:</label>
+    <input type="text" id="image" name="image" required placeholder="https://..." />
+
+    <button type="submit">Cadastrar Produto</button>
+  </form>
+
+  <h2>Produtos Cadastrados</h2>
+  <div class="products-list" id="products-list">
+    <!-- Lista de produtos aparecerá aqui -->
+  </div>
+
+  <script>
+    // Função para buscar produtos no localStorage
+    function getStoredProducts() {
+      try {
+        const data = localStorage.getItem('products');
+        if (!data) return [];
+        return JSON.parse(data);
+      } catch {
+        return [];
+      }
+    }
+
+    // Função para salvar produtos no localStorage
+    function saveProducts(products) {
+      localStorage.setItem('products', JSON.stringify(products));
+    }
+
+    // Formatar preço BRL
+    function formatPrice(price) {
+      return Number(price).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    // Renderizar produtos cadastrados na lista
+    function renderProducts() {
+      const products = getStoredProducts();
+      const container = document.getElementById('products-list');
+      container.innerHTML = '';
+
+      if (products.length === 0) {
+        container.innerHTML = '<p>Nenhum produto cadastrado ainda.</p>';
+        return;
+      }
+
+      products.forEach(prod => {
+        const item = document.createElement('div');
+        item.classList.add('product-item');
+
+        const img = document.createElement('img');
+        img.src = prod.image;
+        img.alt = prod.name;
+
+        const info = document.createElement('div');
+        info.classList.add('product-info');
+        info.innerHTML = `
+          <strong>${prod.name}</strong><br>
+          Categoria: ${prod.category}<br>
+          Preço: ${formatPrice(prod.price)}<br>
+          ${prod.description ? `<em>${prod.description}</em>` : ''}
+        `;
+
+        item.appendChild(img);
+        item.appendChild(info);
+        container.appendChild(item);
+      });
+    }
+
+    // Cadastrar novo produto via formulário
+    const form = document.getElementById('product-form');
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const newProduct = {
+        id: Date.now(),
+        name: form.name.value.trim(),
+        price: parseFloat(form.price.value),
+        category: form.category.value,
+        description: form.description.value.trim(),
+        image: form.image.value.trim()
+      };
+
+      if (!newProduct.name || isNaN(newProduct.price) || !newProduct.category || !newProduct.image) {
+        alert('Por favor, preencha todos os campos obrigatórios.');
+        return;
+      }
+
+      const products = getStoredProducts();
+      products.push(newProduct);
+      saveProducts(products);
+
+      alert(`Produto "${newProduct.name}" cadastrado com sucesso!`);
+
+      form.reset();
+      renderProducts();
+    });
+
+    // Inicializar lista ao carregar a página
+    window.addEventListener('DOMContentLoaded', () => {
+      renderProducts();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+textarea {
+  width: 100%;
+  padding: 12px 14px;
+  margin-top: 10px;
+  margin-bottom: 18px;
+  border: 1.8px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+  box-sizing: border-box;
+  resize: vertical;
+  transition: border-color 0.3s ease;
+}
+
+textarea:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+input[type="file"] {
+  padding: 6px 10px;
+  font-size: 15px;
+}
