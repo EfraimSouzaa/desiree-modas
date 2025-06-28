@@ -180,3 +180,4 @@ document.querySelector('.cart-icon').addEventListener('click', () => {
 window.addEventListener('DOMContentLoaded', () => {
   renderProductsByCategory();
 });
+
